@@ -217,11 +217,18 @@ func (p *Problem) GetTitle() string {
 	return p.Title
 }
 
-// FromError creates a new problem from the provided error
-func FromError(err error) *Problem {
-	prob := New(500, err.Error())
+// FromErrorWithStatus creates a new problem from the
+// provided error but sets the status to the one provided
+// rather than the default of 500.
+func FromErrorWithStatus(status int, err error) *Problem {
+	prob := New(status, err.Error())
 	prob.err = fmt.Errorf("Problem: %w", err)
 	return prob
+}
+
+// FromError creates a new problem from the provided error
+func FromError(err error) *Problem {
+	return FromErrorWithStatus(http.StatusInternalServerError, err)
 }
 
 // Wrap creates a Problem that wraps a standard error
