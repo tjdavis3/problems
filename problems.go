@@ -92,12 +92,12 @@ func (prob *Problem) Set(key string, value interface{}) error {
 }
 
 // Render will output the error as an HTTP response
-func (prob *Problem) Render(w http.ResponseWriter, r *http.Request) {
+func (prob *Problem) Render(w http.ResponseWriter, r *http.Request) error {
 	w.Header().Set("Content-Type", ProblemMediaType)
 	if prob.Status != 0 {
 		w.WriteHeader(prob.Status)
 	}
-	_ = json.NewEncoder(w).Encode(prob)
+	return json.NewEncoder(w).Encode(prob)
 }
 
 func (prob *Problem) MarshalJSON() ([]byte, error) {
