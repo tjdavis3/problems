@@ -21,6 +21,15 @@ type renderType string
 var jsonType renderType = "json"
 var xmlType renderType = "xml"
 
+type Error interface {
+	error
+	Set(key string, value interface{}) Error
+	StatusCode() int
+	Get(string) interface{}
+	// ExtraFields lists the addon fields that can be retrieved with `Get`
+	ExtraFields() []string
+}
+
 // Problem is an RFC7807 representation of an error
 type Problem struct {
 	// Type is a URI reference [RFC3986] that identifies the
@@ -66,12 +75,16 @@ func (prob *Problem) Unwrap() error {
 // Setting anything other than the basic attributes requires a type other than `about:blank`
 func (prob *Problem) Set(key string, value interface{}) error {
 	switch strings.Title(key) {
+	case "Subject":
+		fallthrough
 	case "Title":
 		prob.Title = fmt.Sprint(value)
 	case "Status":
 		return New(500, "Cannot set status with Set")
 	case "Type":
 		prob.Type = fmt.Sprint(value)
+	case "Message":
+		fallthrough
 	case "Detail":
 		prob.Detail = fmt.Sprint(value)
 	case "Instance":
@@ -89,6 +102,31 @@ func (prob *Problem) Set(key string, value interface{}) error {
 		prob.Attributes[key] = value
 	}
 	return nil
+}
+
+// Get allows retrieval of any of the fields.
+func (prob *Problem) Get(key string) interface{} {
+	switch strings.Title(key) {
+	case "Subject":
+		fallthrough
+	case "Title":
+		return prob.Title
+	case "Status":
+		return prob.Status
+	case "Type":
+		return prob.Type
+	case "Message":
+		fallthrough
+	case "Detail":
+		return prob.Detail
+	case "Instance":
+		return prob.Instance
+	default:
+		if prob.Attributes == nil {
+			return ""
+		}
+		return prob.Attributes[key]
+	}
 }
 
 // Render will output the error as an HTTP response
@@ -199,6 +237,15 @@ func (prob *Problem) Unmarshal(renderAs renderType, data []byte) error {
 		}
 	}
 	return nil
+}
+
+func (prob *Problem) ExtraFields() []string {
+	var fields []string
+
+	for name := range prob.Attributes {
+		fields = append(fields, name)
+	}
+	return fields
 }
 
 // New initializes a problem
