@@ -281,7 +281,7 @@ func FromError(err error) *Problem {
 // Wrap creates a Problem that wraps a standard error
 func Wrap(err error) *Problem {
 	if problem, ok := err.(*Problem); ok {
-		return problem
+		return FromErrorWithStatus(problem.Status, problem)
 	}
 	prob := FromError(err)
 	return prob
