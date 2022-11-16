@@ -301,3 +301,14 @@ func (prob *Problem) PrettyPrint() {
 func (prob *Problem) StatusCode() int {
 	return prob.Status
 }
+
+// Errorf creates a problem from a formatted string
+func Errorf(status int, format string, args ...interface{}) *Problem {
+	prob := New(status, fmt.Sprintf(format, args...))
+	for _, arg := range args {
+		if err, ok := arg.(error); ok {
+			prob.err = err
+		}
+	}
+	return prob
+}
