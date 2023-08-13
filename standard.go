@@ -90,6 +90,7 @@ func GetMissingResource(resource MissingResourceParam) *Problem {
 	prob.Set("Detail", fmt.Sprintf("No resource %s found", resource.URL))
 
 	issue := Problem{}
+	issue.Set("Type", TypeNotFound)
 	if resource.Location != "" {
 		issue.Set("in", resource.Location)
 	}
