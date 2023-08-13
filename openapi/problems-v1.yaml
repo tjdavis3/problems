@@ -5,18 +5,59 @@ info:
 paths: {}
 components:
   responses:
+    NoAccessResponse:
+      description: The consumer must pass a valid access token in the Authorization HTTP header for each request to a secure resource.
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
+    InvalidAccessTokenResponse:
+      description: The consumer must pass a valid access token in the Authorization HTTP header for each request to a secure resource.
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
+    ExpiredAccessResponse:
+      description: The access token passed in the Authorization HTTP header has expired and cannot be used anymore. Renew the access token and resubmit the request.
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
+    MissingScopeResponse:
+      description: The consumer access token doesn’t have the required scope to invoke the operation. The requiredScopes property lists the required scopes.
+      content:
+        application/problem+json:
+          schema:
+            type: object
+            allOf:
+              - $ref: "#/components/schemas/Problem"
+            properties:
+              requiredScopes: 
+                type: string
+    MissingPermissionResponse:
+      description: The consumer doesn’t have the right to invoke an operation on the given resource. The refusal is not related to the consumer scope but to access to the specific resource itself (data access).
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
     ProblemResponse:
       content:
         application/problem+json:
           schema:
             $ref: "#/components/schemas/Problem"
       description: a problem
-    InputValidationProblemResponse:
+    InputValidationResponse:
       content:
         application/problem+json:
           schema:
             $ref: "#/components/schemas/InputValidationProblem"
       description: A problem caused by invalid input
+    ResourceNotFoundResponse:
+      description: 'The requested resource cannot be found. The detail property reveals additional information about why the resource was not found.'
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/InputValidationProblem"
 
   schemas:
     Problem:
@@ -61,36 +102,8 @@ components:
           "instance": "urn:uuid:123e4567-e89b-12d3-a456-426614174000",
           "limit": 10485760  # additional properties specific to the problem type are allowed
         }
-    InvalidParamProblem:
-      deprecated: true # deprecated by InputValidationProblem
-      description: Problem details for invalid input parameter(s)
-      type: object
-      allOf:
-        - $ref: "#/components/schemas/Problem"
-      properties:
-        invalidParams:
-          type: array
-          description: An array of parameter OpenAPI violations
-          items:
-            $ref: "#/components/schemas/InvalidParam"
-    InvalidParam:
-      deprecated: true # deprecated by InputValidationIssue (within an InputValidationProblem)
-      type: object
-      properties:
-        in:
-          description: The location of the invalid parameter (cfr Swagger parameters)
-          type: string
-          enum:
-            - body
-            - path
-            - query
-            - header
-        name:
-          description: The name of the invalid parameter
-          type: string
-        value:
-          description: The value of the erroneous parameter
-          # no type specified, allowing any type. This is valid OpenAPI 3.0 even though some editors may indicate an error (issue #25)
+        
+
     InputValidationProblem:
       type: object
       allOf:
