@@ -92,7 +92,7 @@ func (prob *Problem) Set(key string, value interface{}) error {
 	default:
 		if prob.Type == "" || prob.Type == "about:blank" {
 			err := FromError(prob)
-			err.Detail = "Cannot set extended attributes unless Type is set"
+			err.Detail = fmt.Sprintf("Cannot set extended attribute (%s) unless Type is set", key)
 			err.PrettyPrint()
 			return err
 		}
