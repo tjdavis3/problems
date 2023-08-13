@@ -87,7 +87,7 @@ func GetMissingResource(resource MissingResourceParam) *Problem {
 	prob := New(404, "Missing Resource")
 	prob.Set("Type", TypeNotFound)
 	prob.Set("Title", "Resource not found")
-	prob.Set("Detail", fmt.Sprintf("No resource %s found", resource.URL))
+	prob.Set("Detail", fmt.Sprintf("No resource %s:%s found", resource.ResourceType, resource.ResourceValue))
 
 	issue := Problem{}
 	issue.Set("Type", TypeNotFound)
