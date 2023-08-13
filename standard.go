@@ -109,9 +109,13 @@ type ValidationParam struct {
 }
 
 func GetInputValidationResponse(validations ...ValidationParam) *Problem {
-	prob := New(400, "The input message is incorrect")
+	prob := New(400, "The input message is incorrect; see issues for more information")
 	prob.Set("Type", TypeBadRequest)
 	prob.Set("Title", "Bad Request")
+
+	if len(validations) == 1 {
+		prob.Set("Detail", validations[0].Issue)
+	}
 
 	issues := make([]Problem, 0)
 
