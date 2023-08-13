@@ -1,18 +1,23 @@
 package problems
 
-import "fmt"
+import (
+	"fmt"
+	"net/http"
+)
 
 // Problem types
 const (
-	TypeNoAccessToken     = "urn:problem-type:noAccessToken"
-	TypeInvalidToken      = "urn:problem-type:invalidAccessToken"
-	TypeTokenExpired      = "urn:problem-type:expiredAccessToken"
-	TypeMissingScope      = "urn:problem-type:missingScope"
-	TypeMissingPermission = "urn:problem-type:missingPermission"
-	TypeNotFound          = "urn:problem-type:resourceNotFound"
-	TypeBadRequest        = "urn:problem-type:badRequest"
-	TypeSchemaViolation   = "urn:problem-type:input-validation:schemaViolation"
-	TypeUnknownParameter  = "urn:problem-type:input-validation:unknownParameter"
+	TypeNoAccessToken       = "urn:problem-type:noAccessToken"
+	TypeInvalidToken        = "urn:problem-type:invalidAccessToken"
+	TypeTokenExpired        = "urn:problem-type:expiredAccessToken"
+	TypeMissingScope        = "urn:problem-type:missingScope"
+	TypeMissingPermission   = "urn:problem-type:missingPermission"
+	TypeNotFound            = "urn:problem-type:resourceNotFound"
+	TypeBadRequest          = "urn:problem-type:badRequest"
+	TypeSchemaViolation     = "urn:problem-type:input-validation:schemaViolation"
+	TypeUnknownParameter    = "urn:problem-type:input-validation:unknownParameter"
+	TypeInternalServerError = "urn:problem-type:internalServerError"
+	TypeConflict            = "urn:problem-type:conflict"
 )
 
 func GetNoAccessResponse() *Problem {
@@ -49,6 +54,19 @@ func GetMissingPermission() *Problem {
 	prob := New(403, "Not permitted to update the details of this resource")
 	prob.Set("Type", TypeMissingPermission)
 	prob.Set("Title", "Missing Permission")
+	return prob
+}
+
+func GetInternalErrorResponse(detail string) *Problem {
+	prob := New(http.StatusInternalServerError, detail)
+	prob.Set("Type", TypeInternalServerError)
+	prob.Set("Title", http.StatusText(http.StatusInternalServerError))
+	return prob
+}
+
+func GetErrorResponseFromError(err error) *Problem {
+	prob := FromError(err)
+	prob.Set("Type", TypeInternalServerError)
 	return prob
 }
 
