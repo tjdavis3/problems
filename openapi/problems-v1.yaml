@@ -6,40 +6,19 @@ paths: {}
 components:
   responses:
     NoAccessResponse:
-      description: The consumer must pass a valid access token in the Authorization HTTP header for each request to a secure resource.
+      description: There is a problem with the access token.  It is either missing, invalid, or expired
       content:
         application/problem+json:
           schema:
             $ref: "#/components/schemas/Problem"
-    InvalidAccessTokenResponse:
-      description: The consumer must pass a valid access token in the Authorization HTTP header for each request to a secure resource.
+    PermissionsResponse:
+      description: The consumer doesn't have the right to invoke an ooperation or the access token doesn’t have the required scope to invoke the operation. The requiredScopes property lists the required scopes.
       content:
         application/problem+json:
           schema:
-            $ref: "#/components/schemas/Problem"
-    ExpiredAccessResponse:
-      description: The access token passed in the Authorization HTTP header has expired and cannot be used anymore. Renew the access token and resubmit the request.
-      content:
-        application/problem+json:
-          schema:
-            $ref: "#/components/schemas/Problem"
-    MissingScopeResponse:
-      description: The consumer access token doesn’t have the required scope to invoke the operation. The requiredScopes property lists the required scopes.
-      content:
-        application/problem+json:
-          schema:
-            type: object
-            allOf:
+            oneOf:
               - $ref: "#/components/schemas/Problem"
-            properties:
-              requiredScopes: 
-                type: string
-    MissingPermissionResponse:
-      description: The consumer doesn’t have the right to invoke an operation on the given resource. The refusal is not related to the consumer scope but to access to the specific resource itself (data access).
-      content:
-        application/problem+json:
-          schema:
-            $ref: "#/components/schemas/Problem"
+              - $ref: "#/components/schemas/MissingScopeProblem"
     ProblemResponse:
       content:
         application/problem+json:
@@ -164,3 +143,12 @@ components:
         name:
           type: string
         value: {} # any type allowed      
+    MissingScopeProblem:
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/Problem"
+      properties:
+        requiredScopes: 
+          type: array
+          items: 
+            type: string
