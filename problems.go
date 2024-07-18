@@ -268,8 +268,10 @@ func (p *Problem) GetTitle() string {
 // provided error but sets the status to the one provided
 // rather than the default of 500.
 func FromErrorWithStatus(status int, err error) *Problem {
-	prob := New(status, err.Error())
-	prob.err = fmt.Errorf("Problem: %w", err)
+	prob := Wrap(err)
+	if prob.Status != status {
+		prob.Status = status
+	}
 	return prob
 }
 
@@ -281,9 +283,10 @@ func FromError(err error) *Problem {
 // Wrap creates a Problem that wraps a standard error
 func Wrap(err error) *Problem {
 	if problem, ok := err.(*Problem); ok {
-		return FromErrorWithStatus(problem.Status, problem)
+		return problem
 	}
-	prob := FromError(err)
+	prob := New(500, err.Error())
+	prob.err = fmt.Errorf("%w", err)
 	return prob
 }
 
