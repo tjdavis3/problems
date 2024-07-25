@@ -3,6 +3,11 @@ package problems
 import (
 	"fmt"
 	"net/http"
+
+	"github.com/go-playground/locales/en"
+	ut "github.com/go-playground/universal-translator"
+	"github.com/go-playground/validator/v10"
+	en_translations "github.com/go-playground/validator/v10/translations/en"
 )
 
 // Problem types
@@ -19,6 +24,19 @@ const (
 	TypeInternalServerError = "urn:problem-type:internalServerError"
 	TypeConflict            = "urn:problem-type:conflict"
 )
+
+var validate *validator.Validate
+var uni *ut.UniversalTranslator
+var trans ut.Translator
+
+func init() {
+	validate = validator.New(validator.WithRequiredStructEnabled())
+	en := en.New()
+	uni = ut.New(en, en)
+	trans, _ = uni.GetTranslator("en")
+	_ = en_translations.RegisterDefaultTranslations(validate, trans)
+
+}
 
 func GetNoAccessResponse() *Problem {
 	prob := New(401, "No Bearer access token found in Authorization HTTP header")
@@ -136,4 +154,22 @@ func GetInputValidationResponse(validations ...ValidationParam) *Problem {
 
 	prob.Set("issues", issues)
 	return prob
+}
+
+func GetValidatorResponse(err validator.ValidationErrors) *Problem {
+	var errors []ValidationParam
+	for _, err := range err {
+		param := ValidationParam{
+			Location: "body",
+			Name:     err.Namespace(),
+			Value:    err.Value(),
+			Issue:    err.Translate(trans),
+		}
+		errors = append(errors, param)
+	}
+
+	if len(errors) == 0 {
+		return nil
+	}
+	return GetInputValidationResponse(errors...)
 }
