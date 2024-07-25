@@ -10,8 +10,8 @@ import (
 // Basic example
 func Example() {
 	prob := New(500, "An Error has occurred")
-	prob.Set("Title", "Test Error")
-	prob.Set("Instance", "/error/test")
+	_ = prob.Set("Title", "Test Error")
+	_ = prob.Set("Instance", "/error/test")
 	prob.PrettyPrint()
 	// Output: {
 	//   "detail": "An Error has occurred",
@@ -27,10 +27,10 @@ func Example() {
 // extended attributes
 func Example_extended() {
 	prob := New(500, "An Error has occurred")
-	prob.Set("Title", "Test Error")
-	prob.Set("Instance", "/error/test")
-	prob.Set("Type", "uri:example:extended")
-	prob.Set("TraceID", "12345-67890")
+	_ = prob.Set("Title", "Test Error")
+	_ = prob.Set("Instance", "/error/test")
+	_ = prob.Set("Type", "uri:example:extended")
+	_ = prob.Set("TraceID", "12345-67890")
 	prob.PrettyPrint()
 	// Output: {
 	//   "detail": "An Error has occurred",
@@ -48,14 +48,14 @@ func Example_extended() {
 // extended attributes
 func Example_array() {
 	prob := New(500, "An Error has occurred")
-	prob.Set("Title", "Test Error")
-	prob.Set("Instance", "/error/test")
-	prob.Set("Type", "uri:example:extended")
-	prob.Set("TraceID", "12345-67890")
+	_ = prob.Set("Title", "Test Error")
+	_ = prob.Set("Instance", "/error/test")
+	_ = prob.Set("Type", "uri:example:extended")
+	_ = prob.Set("TraceID", "12345-67890")
 	issues := make(map[string]interface{})
 	issues["field"] = "state"
 	issues["message"] = "A valid state must be provided"
-	prob.Set("invalid-params", []map[string]interface{}{issues})
+	_ = prob.Set("invalid-params", []map[string]interface{}{issues})
 	prob.PrettyPrint()
 	// Output: {
 	//   "detail": "An Error has occurred",
@@ -204,7 +204,7 @@ func TestProblem_Render(t *testing.T) {
 				Attributes: tt.fields.Attributes,
 				err:        tt.fields.err,
 			}
-			prob.Render(tt.args.w, tt.args.r)
+			_ = prob.Render(tt.args.w, tt.args.r)
 		})
 	}
 }

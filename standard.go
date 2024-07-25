@@ -41,50 +41,50 @@ func init() {
 func GetNoAccessResponse() *Problem {
 	prob := New(401, "No Bearer access token found in Authorization HTTP header")
 	prob.Type = TypeNoAccessToken
-	prob.Set("Title", "No Access Token")
+	_ = prob.Set("Title", "No Access Token")
 	return prob
 }
 
 func GetInvalidTokenResponse() *Problem {
 	prob := New(401, "The Bearer access token found in the Authorization HTTP header is invalid")
-	prob.Set("Title", "Invalid Access Token")
-	prob.Set("Type", TypeInvalidToken)
+	_ = prob.Set("Title", "Invalid Access Token")
+	_ = prob.Set("Type", TypeInvalidToken)
 	return prob
 }
 
 func GetExpiredTokenResponse() *Problem {
 	prob := New(401, "The Bearer access token found in the Authorization HTTP header has expired")
-	prob.Set("Type", TypeTokenExpired)
-	prob.Set("Title", "Expired Access Token")
+	_ = prob.Set("Type", TypeTokenExpired)
+	_ = prob.Set("Title", "Expired Access Token")
 	return prob
 }
 
 func GetMissingScopeResponse(scopes []string) *Problem {
 	prob := New(403, "Forbidden to consult the resource")
-	prob.Set("Type", TypeMissingScope)
-	prob.Set("Title", "Missing Scope")
+	_ = prob.Set("Type", TypeMissingScope)
+	_ = prob.Set("Title", "Missing Scope")
 
-	prob.Set("requiredScopes", scopes)
+	_ = prob.Set("requiredScopes", scopes)
 	return prob
 }
 
 func GetMissingPermission() *Problem {
 	prob := New(403, "Not permitted to update the details of this resource")
-	prob.Set("Type", TypeMissingPermission)
-	prob.Set("Title", "Missing Permission")
+	_ = prob.Set("Type", TypeMissingPermission)
+	_ = prob.Set("Title", "Missing Permission")
 	return prob
 }
 
 func GetInternalErrorResponse(detail string) *Problem {
 	prob := New(http.StatusInternalServerError, detail)
-	prob.Set("Type", TypeInternalServerError)
-	prob.Set("Title", http.StatusText(http.StatusInternalServerError))
+	_ = prob.Set("Type", TypeInternalServerError)
+	_ = prob.Set("Title", http.StatusText(http.StatusInternalServerError))
 	return prob
 }
 
 func GetErrorResponseFromError(err error) *Problem {
 	prob := FromError(err)
-	prob.Set("Type", TypeInternalServerError)
+	_ = prob.Set("Type", TypeInternalServerError)
 	return prob
 }
 
@@ -103,19 +103,19 @@ type MissingResourceParam struct {
 // GetMissingResource creates a Problem that defines the resource that was not found
 func GetMissingResource(resource MissingResourceParam) *Problem {
 	prob := New(404, "Missing Resource")
-	prob.Set("Type", TypeNotFound)
-	prob.Set("Title", "Resource not found")
-	prob.Set("Detail", fmt.Sprintf("No resource %s:%s found", resource.ResourceType, resource.ResourceValue))
+	_ = prob.Set("Type", TypeNotFound)
+	_ = prob.Set("Title", "Resource not found")
+	_ = prob.Set("Detail", fmt.Sprintf("No resource %s:%s found", resource.ResourceType, resource.ResourceValue))
 
 	issue := Problem{}
-	issue.Set("Type", TypeNotFound)
+	_ = issue.Set("Type", TypeNotFound)
 	if resource.Location != "" {
-		issue.Set("in", resource.Location)
+		_ = issue.Set("in", resource.Location)
 	}
-	issue.Set("name", resource.ResourceType)
-	issue.Set("detail", fmt.Sprintf("the %s %v is not assigned", resource.ResourceType, resource.ResourceValue))
-	issue.Set("value", resource.ResourceValue)
-	prob.Set("issues", []interface{}{issue})
+	_ = issue.Set("name", resource.ResourceType)
+	_ = issue.Set("detail", fmt.Sprintf("the %s %v is not assigned", resource.ResourceType, resource.ResourceValue))
+	_ = issue.Set("value", resource.ResourceValue)
+	_ = prob.Set("issues", []interface{}{issue})
 	return prob
 }
 
@@ -129,11 +129,11 @@ type ValidationParam struct {
 
 func GetInputValidationResponse(validations ...ValidationParam) *Problem {
 	prob := New(400, "The input message is incorrect; see issues for more information")
-	prob.Set("Type", TypeBadRequest)
-	prob.Set("Title", "Bad Request")
+	_ = prob.Set("Type", TypeBadRequest)
+	_ = prob.Set("Title", "Bad Request")
 
 	if len(validations) == 1 {
-		prob.Set("Detail", validations[0].Issue)
+		_ = prob.Set("Detail", validations[0].Issue)
 	}
 
 	issues := make([]Problem, 0)
@@ -141,18 +141,18 @@ func GetInputValidationResponse(validations ...ValidationParam) *Problem {
 	for _, validation := range validations {
 		issue := Problem{}
 		if validation.IsUnknown {
-			issue.Set("Type", TypeUnknownParameter)
+			_ = issue.Set("Type", TypeUnknownParameter)
 		} else {
-			issue.Set("Type", TypeSchemaViolation)
+			_ = issue.Set("Type", TypeSchemaViolation)
 		}
-		issue.Set("in", validation.Location)
-		issue.Set("name", validation.Name)
-		issue.Set("value", validation.Value)
-		issue.Set("Detail", validation.Issue)
+		_ = issue.Set("in", validation.Location)
+		_ = issue.Set("name", validation.Name)
+		_ = issue.Set("value", validation.Value)
+		_ = issue.Set("Detail", validation.Issue)
 		issues = append(issues, issue)
 	}
 
-	prob.Set("issues", issues)
+	_ = prob.Set("issues", issues)
 	return prob
 }
 
