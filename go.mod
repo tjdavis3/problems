@@ -1,4 +1,4 @@
-module github.com/tjdavis3/problems
+module tjdavis.dev/problems
 
 go 1.16
 

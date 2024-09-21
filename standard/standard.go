@@ -1,6 +1,6 @@
 /*
 Package standard contains a set of standard problem definitions that can be
-easily instantiated.  The OpenAPI definitions can be found in the [github.com/tjdavis3/problems/openapi]
+easily instantiated.  The OpenAPI definitions can be found in the [tjdavis.dev/problems/openapi]
 directory.
 */
 package standard
@@ -13,7 +13,7 @@ import (
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
 	en_translations "github.com/go-playground/validator/v10/translations/en"
-	. "github.com/tjdavis3/problems"
+	. "tjdavis.dev/problems"
 )
 
 // Problem types
